@@ -14,6 +14,7 @@ const StaffInventory = () => {
   const [search, setSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [exactSearch, setExactSearch] = useState(false);
 
   // Load item list
   useEffect(() => {
@@ -101,7 +102,7 @@ const StaffInventory = () => {
     setSubmitted(true);
   };
 
-  const filtered = items.filter(i => i.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = items.filter(i => exactSearch ? i.name.toLowerCase() === search.toLowerCase() : i.name.toLowerCase().includes(search.toLowerCase()));
   const countRegistered = Object.values(draft).filter(d => d.registered).length;
 
   return (
@@ -117,8 +118,24 @@ const StaffInventory = () => {
         </div>
       )}
 
-      <input type="text" placeholder="Tìm kiếm sản phẩm..." value={search}
-        onChange={e => setSearch(e.target.value)} style={{ width: '100%', marginBottom: '1.5rem' }} />
+      <div style={{ position: 'relative', width: '100%', marginBottom: '1.5rem' }}>
+        <input type="text" placeholder="Tìm kiếm sản phẩm..." value={search}
+          onChange={e => { setSearch(e.target.value); setExactSearch(false); }}
+          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '1rem', boxSizing: 'border-box' }} />
+        {search && !exactSearch && filtered.length > 0 && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid var(--border-color)', borderRadius: '0 0 8px 8px', zIndex: 100, maxHeight: '200px', overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            {filtered.map(item => (
+              <div key={item.id} onClick={() => { setSearch(item.name); setExactSearch(true); }}
+                style={{ padding: '0.6rem 0.75rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-main)'}
+                onMouseLeave={e => e.currentTarget.style.background = ''}>
+                {item.name}
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginLeft: '0.4rem' }}>({item.unit})</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="inventory-grid">
         {filtered.map(item => (
