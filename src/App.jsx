@@ -7,6 +7,7 @@ import Inventory from './pages/Inventory';
 import ReportsView from './pages/ReportsView';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 const ProtectedRoute = ({ children, requireAdmin }) => {
@@ -54,7 +55,9 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <AppContent />
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
       </Router>
     </AuthProvider>
   );
