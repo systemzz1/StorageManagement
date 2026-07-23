@@ -14,6 +14,7 @@ const StaffInventory = () => {
   const [search, setSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [exactSearch, setExactSearch] = useState(false);
 
   useEffect(() => {
@@ -116,6 +117,19 @@ const StaffInventory = () => {
     setSubmitted(true);
   };
 
+  const handleDeleteAllReports = async () => {
+    if (!window.confirm('Xóa tất cả báo cáo? Hành động này không thể hoàn tác!')) return;
+    setDeleting(true);
+    try {
+      await remove(ref(database, 'staff_reports'));
+      await remove(ref(database, `reports_draft/${currentUser.uid}`));
+      setDraft({});
+      setSubmitted(true);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const filtered = items.filter(i => exactSearch ? i.name.toLowerCase() === search.toLowerCase() : i.name.toLowerCase().includes(search.toLowerCase()));
   const sorted = [...filtered].sort((a, b) => {
     const aR = draft[a.id]?.registered ? 1 : 0;
@@ -164,8 +178,11 @@ const StaffInventory = () => {
       </div>
 
       <div className="submit-bar">
-        <button onClick={handleSubmitAll} className="primary submit-btn" disabled={submitting}>
+        <button onClick={handleSubmitAll} className="primary submit-btn" disabled={submitting || deleting}>
           {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered} mục đã đếm)`}
+        </button>
+        <button onClick={handleDeleteAllReports} className="danger submit-btn" disabled={deleting || submitting} style={{ marginTop: '0.5rem' }}>
+          {deleting ? 'Đang xóa...' : 'Xóa Tất Cả Báo Cáo'}
         </button>
       </div>
     </div>
