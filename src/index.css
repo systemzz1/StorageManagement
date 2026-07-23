@@ -552,6 +552,18 @@ button.active-view {
   color: #065f46;
 }
 
+.reported-badge {
+  font-size: 0.7rem;
+  background: #f0fdf4;
+  color: #065f46;
+  border: 1px solid #bbf7d0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
 /* Loading text */
 .loading-text {
   text-align: center;
