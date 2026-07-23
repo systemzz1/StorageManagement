@@ -42,7 +42,7 @@ const StaffInventory = () => {
   };
 
   const handleAdd = (itemId, inputVal) => {
-    const num = parseInt(inputVal);
+    const num = parseFloat(inputVal);
     if (isNaN(num) || num < 0) return false;
     const prev = draft[itemId] || { accumulated: 0, log: [] };
     const newAcc = prev.accumulated + num;
@@ -55,7 +55,7 @@ const StaffInventory = () => {
     const prev = draft[itemId] || { accumulated: 0, log: [] };
     let next = { ...prev };
     if (inputVal !== undefined && inputVal !== '') {
-      const num = parseInt(inputVal);
+      const num = parseFloat(inputVal);
       if (!isNaN(num) && num >= 0) {
         next.accumulated += num;
         next.log = [...(next.log || []), num];
@@ -208,7 +208,7 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) 
 
   const handleAdd = () => {
     if (input === '') { setError('Vui lòng nhập số lượng'); return; }
-    const num = parseInt(input);
+    const num = parseFloat(input);
     if (isNaN(num) || num < 0) { setError('Số lượng không hợp lệ (không được âm)'); return; }
     setError('');
     const success = onAdd(input);
@@ -232,7 +232,7 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) 
 
       {log.length > 0 && (
         <div className="log-row">
-          <span>{log.join(' + ')} = <strong>{accumulated}</strong> {item.unit}</span>
+            <span>{log.map(v => Number(v.toFixed(3))).join(' + ')} = <strong>{Number(accumulated.toFixed(3))}</strong> {item.unit}</span>
           <button className="undo-btn" onClick={onUndo} title="Hoàn tác lần cộng cuối">
             <Undo2 size={14} />
           </button>
@@ -250,6 +250,7 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) 
       <div className="staff-input-row">
         <input
           type="number"
+          step="any"
           value={input}
           onChange={e => { setInput(e.target.value); setError(''); }}
           placeholder={accumulated > 0 ? `${accumulated}` : '0'}
