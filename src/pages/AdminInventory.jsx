@@ -24,6 +24,8 @@ const AdminInventory = () => {
   const [editItem, setEditItem] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [exactSearch, setExactSearch] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   // Load master item list
   useEffect(() => {
@@ -350,6 +352,17 @@ const AdminInventory = () => {
     [allLoggedDates]
   );
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedItems = useMemo(() =>
+    filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage, PAGE_SIZE]
+  );
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, items]);
+
   return (
     <div className="container" style={{ paddingBottom: '6rem' }}>
       <header className="app-header">
@@ -440,7 +453,7 @@ const AdminInventory = () => {
     </div>
 
     <div className="inventory-grid">
-      {filtered.map(item => {
+      {paginatedItems.map(item => {
         const d = dayData[item.id] || {};
         const newTotal = getNew(item.id);
         return (
@@ -485,6 +498,28 @@ const AdminInventory = () => {
         );
       })}
     </div>
+
+    {totalPages > 1 && (
+      <div className="pagination">
+        <button
+          className="secondary btn-sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+        >
+          Trước
+        </button>
+        <span className="page-info">
+          {currentPage} / {totalPages}
+        </span>
+        <button
+          className="secondary btn-sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+        >
+          Sau
+        </button>
+      </div>
+    )}
   </>
 ) : (
   <div>

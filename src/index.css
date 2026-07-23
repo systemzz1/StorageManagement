@@ -278,6 +278,22 @@ button.active-view {
   background: var(--bg-main);
 }
 
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.page-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
 /* Filter and search row */
 .filter-row {
   display: flex;
