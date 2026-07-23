@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ref, onValue, get, set, push, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
 import { useAuth } from '../contexts/useAuth';
-import { Plus, Check, Undo2, RotateCcw } from 'lucide-react';
+import { Plus, Check, Undo2, RotateCcw, Trash2 } from 'lucide-react';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const EXPIRE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -177,12 +177,12 @@ const StaffInventory = () => {
         ))}
       </div>
 
-      <div className="submit-bar">
-        <button onClick={handleSubmitAll} className="primary submit-btn" disabled={submitting || deleting}>
-          {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered} mục đã đếm)`}
+      <div className="submit-bar" style={{ display: 'flex', gap: '0.5rem' }}>
+        <button onClick={handleSubmitAll} className="primary" style={{ flex: 1 }} disabled={submitting || deleting}>
+          {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered})`}
         </button>
-        <button onClick={handleDeleteAllReports} className="danger submit-btn" disabled={deleting || submitting} style={{ marginTop: '0.5rem' }}>
-          {deleting ? 'Đang xóa...' : 'Xóa Tất Cả Báo Cáo'}
+        <button onClick={handleDeleteAllReports} className="danger" style={{ width: '3rem', flexShrink: 0, justifyContent: 'center' }} disabled={deleting || submitting} title="Xóa tất cả báo cáo">
+          {deleting ? '...' : <Trash2 size={18} />}
         </button>
       </div>
     </div>
