@@ -112,25 +112,18 @@ const StaffInventory = () => {
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{countRegistered}/{items.length}</span>
       </header>
 
-      {submitted && (
-        <div style={{ background: '#d1fae5', color: '#065f46', borderRadius: '8px', padding: '1rem', marginBottom: '1rem', textAlign: 'center', fontWeight: 600 }}>
-          ✅ Đã gửi báo cáo thành công!
-        </div>
-      )}
+      {submitted && <div className="toast success">✅ Đã gửi báo cáo thành công!</div>}
 
-      <div style={{ position: 'relative', width: '100%', marginBottom: '1.5rem' }}>
+      <div className="search-wrapper" style={{ marginBottom: '1.5rem' }}>
         <input type="text" placeholder="Tìm kiếm sản phẩm..." value={search}
-          onChange={e => { setSearch(e.target.value); setExactSearch(false); }}
-          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '1rem', boxSizing: 'border-box' }} />
+          onChange={e => { setSearch(e.target.value); setExactSearch(false); }} />
         {search && !exactSearch && filtered.length > 0 && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid var(--border-color)', borderRadius: '0 0 8px 8px', zIndex: 100, maxHeight: '200px', overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div className="search-dropdown">
             {filtered.map(item => (
-              <div key={item.id} onClick={() => { setSearch(item.name); setExactSearch(true); }}
-                style={{ padding: '0.6rem 0.75rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-main)'}
-                onMouseLeave={e => e.currentTarget.style.background = ''}>
+              <div key={item.id} className="search-dropdown-item"
+                onClick={() => { setSearch(item.name); setExactSearch(true); }}>
                 {item.name}
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginLeft: '0.4rem' }}>({item.unit})</span>
+                <span className="unit-tag">({item.unit})</span>
               </div>
             ))}
           </div>
@@ -149,9 +142,8 @@ const StaffInventory = () => {
         ))}
       </div>
 
-      <div style={{ position: 'fixed', bottom: '72px', left: 0, right: 0, padding: '0.75rem 1rem', background: 'white', borderTop: '1px solid var(--border-color)', zIndex: 30 }}>
-        <button onClick={handleSubmitAll} className="primary" disabled={submitting}
-          style={{ width: '100%', padding: '1rem' }}>
+      <div className="submit-bar">
+        <button onClick={handleSubmitAll} className="primary submit-btn" disabled={submitting}>
           {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered} mục đã đếm)`}
         </button>
       </div>
@@ -194,21 +186,20 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister }) => {
 
       {error && <div style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>{error}</div>}
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+      <div className="staff-input-row">
         <input
           type="number"
           value={input}
           onChange={e => { setInput(e.target.value); setError(''); }}
           placeholder={accumulated > 0 ? `${accumulated}` : '0'}
-          style={{ flex: 1, textAlign: 'center', fontSize: '1.1rem', padding: '0.75rem' }}
+          className="staff-input"
         />
-        <button onClick={handleAdd} className="primary" style={{ padding: '0.75rem 1rem' }}>
+        <button onClick={handleAdd} className="primary add-btn">
           <Plus size={18} /> Cộng
         </button>
       </div>
 
-      <button onClick={onRegister}
-        style={{ width: '100%', marginTop: '0.75rem', background: registered ? '#d1fae5' : 'var(--bg-card)', color: registered ? '#065f46' : 'var(--text-primary)', fontWeight: 600 }}>
+      <button onClick={onRegister} className={`register-btn ${registered ? 'registered' : ''}`}>
         {registered ? '✅ Đã Ghi Nhận' : 'Ghi Nhận'}
       </button>
     </div>

@@ -204,64 +204,40 @@ const AdminDashboard = () => {
         </button>
       </header>
 
-      {toast && (
-        <div style={{ background: '#d1fae5', color: '#065f46', padding: '0.875rem 1rem', borderRadius: '8px', marginBottom: '1rem', fontWeight: 500 }}>
-          {toast}
-        </div>
-      )}
+      {toast && <div className="toast success">{toast}</div>}
 
-      <input type="text" placeholder="Tìm theo tên hoặc email..." value={search}
-        onChange={e => setSearch(e.target.value)} style={{ width: '100%', marginBottom: '1.25rem' }} />
+      <input type="text" className="search-input" placeholder="Tìm theo tên hoặc email..." value={search}
+        onChange={e => setSearch(e.target.value)} />
 
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>Đang tải...</div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div className="user-list">
           {filtered.map(user => (
-            <div key={user.uid} className="inventory-item"
-              style={{ opacity: user.disabled ? 0.5 : 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {user.displayName || user.email}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {user.email}
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                    <span style={{
-                      fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '999px',
-                      background: user.role === 'admin' ? '#eff6ff' : '#f0fdf4',
-                      color: user.role === 'admin' ? 'var(--accent)' : 'var(--success)',
-                      border: `1px solid ${user.role === 'admin' ? '#bfdbfe' : '#bbf7d0'}`
-                    }}>
+            <div key={user.uid} className={`inventory-item user-card${user.disabled ? ' disabled' : ''}`}>
+              <div className="user-card-body">
+                <div className="user-info">
+                  <div className="user-name">{user.displayName || user.email}</div>
+                  <div className="user-email">{user.email}</div>
+                  <div className="user-badges">
+                    <span className={`badge role-${user.role}`}>
                       {user.role === 'admin' ? '👑 Admin' : '👤 Staff'}
                     </span>
-                    {user.disabled && (
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '999px', background: '#fee2e2', color: 'var(--danger)', border: '1px solid #fecaca' }}>
-                        Đã vô hiệu hóa
-                      </span>
-                    )}
-                    {user.uid === currentUser?.uid && (
-                      <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '999px', background: '#f5f3ff', color: '#7c3aed', border: '1px solid #ddd6fe' }}>
-                        Tài khoản của bạn
-                      </span>
-                    )}
+                    {user.disabled && <span className="badge badge-disabled">Đã vô hiệu hóa</span>}
+                    {user.uid === currentUser?.uid && <span className="badge badge-self">Tài khoản của bạn</span>}
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
-                  <button onClick={() => setResetTarget(user)}
-                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.8rem', display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                <div className="user-actions">
+                  <button className="action-btn" onClick={() => setResetTarget(user)}>
                     <KeyRound size={14} /> Đặt lại MK
                   </button>
-                  <button onClick={() => handleToggleDisable(user)}
-                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.8rem', display: 'flex', gap: '0.3rem', alignItems: 'center', color: user.disabled ? 'var(--success)' : 'var(--text-secondary)' }}>
+                  <button className="action-btn" onClick={() => handleToggleDisable(user)}
+                    style={{ color: user.disabled ? 'var(--success)' : undefined }}>
                     {user.disabled ? '✅ Kích hoạt' : '⏸ Vô hiệu hóa'}
                   </button>
                   {user.uid !== currentUser?.uid && (
-                    <button onClick={() => handleDelete(user)}
-                      style={{ padding: '0.5rem 0.75rem', fontSize: '0.8rem', display: 'flex', gap: '0.3rem', alignItems: 'center', color: 'var(--danger)' }}>
+                    <button className="action-btn danger-text" onClick={() => handleDelete(user)}>
                       <Trash2 size={14} /> Xóa
                     </button>
                   )}
@@ -271,9 +247,7 @@ const AdminDashboard = () => {
           ))}
 
           {filtered.length === 0 && (
-            <div className="inventory-item" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
-              Không tìm thấy tài khoản nào.
-            </div>
+            <div className="inventory-item empty-state">Không tìm thấy tài khoản nào.</div>
           )}
         </div>
       )}

@@ -114,22 +114,14 @@ const AdminInventory = () => {
       const updates = {};
       items.forEach(item => {
         const d = dayData[item.id] || {};
-        let finalAdded = d.added || 0;
-        let finalUsed = d.used || 0;
-
+        const finalAdded = d.added || 0;
+        const finalUsed = d.used || 0;
         const currentNewTotal = getNew(item.id);
-        const startPoint = d.oldStock || 0;
-
-        if (finalAdded === 0 && finalUsed === 0) {
-          const diff = currentNewTotal - startPoint;
-          if (diff > 0) finalAdded = diff;
-          else if (diff < 0) finalUsed = Math.abs(diff);
-        }
 
         updates[`master_storage_logs/${selectedDate}/items/${item.id}`] = {
           name: item.name,
           unit: item.unit,
-          oldStock: startPoint,
+          oldStock: d.oldStock || 0,
           added: finalAdded,
           used: finalUsed,
           newTotal: currentNewTotal,
@@ -360,71 +352,34 @@ const AdminInventory = () => {
         </h1>
         <div style={{ display: 'flex', gap: '0.375rem' }}>
           <button className="primary" onClick={() => setIsModalOpen(true)} title="Thêm mặt hàng mới"><Plus size={18} /></button>
-          <button 
-            className="secondary" 
-            onClick={exportFullHistory}
-            title="Xuất File Excel"
-            style={{ display: 'flex', alignItems: 'center', padding: '0.5rem' }}
-          >
+          <button className="secondary icon-btn" onClick={exportFullHistory} title="Xuất File Excel">
             <Download size={16} />
           </button>
-          <button 
-            className={`secondary ${viewMode === 'history' ? 'active' : ''}`}
+          <button
+            className={`secondary icon-btn${viewMode === 'history' ? ' active-view' : ''}`}
             onClick={handleToggleView}
             title={viewMode === 'edit' ? 'Xem lịch sử kho' : 'Quay lại chỉnh sửa'}
-            style={{ display: 'flex', alignItems: 'center', padding: '0.5rem', border: viewMode === 'history' ? '2px solid var(--accent)' : undefined }}
           >
             <List size={16} />
           </button>
-          <button 
-            className="secondary" 
-            onClick={populateDummyHistory}
-            title="Tạo dữ liệu mẫu 5 ngày"
-            style={{ display: 'flex', alignItems: 'center', padding: '0.5rem' }}
-          >
+          <button className="secondary icon-btn" onClick={populateDummyHistory} title="Tạo dữ liệu mẫu 5 ngày">
             <Plus size={16} style={{ opacity: 0.7 }} />
           </button>
         </div>
       </header>
 
-      {/* Date Selector Chips with Status Indicators */}
       <div style={{ marginBottom: '1rem', width: '100%' }}>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.4rem', fontWeight: 600 }}>
-          Lịch sử các ngày kiểm kho:
-        </div>
-        <div 
-          className="date-chips-scroll"
-          style={{ 
-            display: 'flex', 
-            gap: '0.5rem', 
-            overflowX: 'auto', 
-            paddingBottom: '0.6rem',
-            paddingTop: '0.2rem',
-            WebkitOverflowScrolling: 'touch',
-            width: '100%'
-          }}
-        >
+        <div className="section-label">Lịch sử các ngày kiểm kho:</div>
+        <div className="date-chips-scroll date-chips-bar">
           {chipDates.map(dateStr => {
             const isChotted = !!allLoggedDates[dateStr];
             const isSelected = dateStr === selectedDate;
+            const chipClass = isSelected ? 'date-chip selected' : isChotted ? 'date-chip logged' : 'date-chip';
             return (
               <button
                 key={dateStr}
+                className={chipClass}
                 onClick={() => setSelectedDate(dateStr)}
-                style={{
-                  flexShrink: 0,
-                  padding: '0.4rem 0.75rem',
-                  fontSize: '0.8rem',
-                  borderRadius: '20px',
-                  border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border-color)',
-                  background: isSelected ? 'var(--accent)' : isChotted ? '#f0fdf4' : 'var(--bg-card)',
-                  color: isSelected ? 'white' : isChotted ? '#15803d' : 'var(--text-secondary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  whiteSpace: 'nowrap',
-                  fontWeight: isSelected || isChotted ? 600 : 400
-                }}
               >
                 {isChotted && <CheckCircle2 size={12} color={isSelected ? 'white' : '#16a34a'} />}
                 <span>{dateStr === today() ? `Hôm nay (${dateStr})` : dateStr}</span>
@@ -436,40 +391,31 @@ const AdminInventory = () => {
 
 {viewMode === 'edit' ? (
   <>
-    <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-      <div style={{ position: 'relative', flex: '0 0 auto' }}>
+    <div className="filter-row">
+      <div className="date-picker-wrap">
         <input
           type="date"
           value={selectedDate}
           onChange={e => setSelectedDate(e.target.value)}
-          style={{ 
-            padding: '0.75rem', 
-            borderRadius: '8px', 
-            border: `2px solid ${hasChotKho ? 'var(--success)' : 'var(--border-color)'}`,
-            fontSize: '1rem' 
-          }}
+          className="date-input"
+          style={{ borderColor: hasChotKho ? 'var(--success)' : undefined }}
         />
-        {hasChotKho && (
-          <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--success)', color: 'white', borderRadius: '10px', padding: '2px 6px', fontSize: '10px', fontWeight: 700 }}>Đã Chốt</div>
-        )}
+        {hasChotKho && <div className="chot-badge">Đã Chốt</div>}
       </div>
-      <div style={{ position: 'relative', flex: 1 }}>
+      <div className="search-wrapper">
         <input
           type="text"
           placeholder="Tìm kiếm mặt hàng..."
           value={search}
           onChange={e => { setSearch(e.target.value); setExactSearch(false); }}
-          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '1rem', boxSizing: 'border-box' }}
         />
         {search && !exactSearch && filtered.length > 0 && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid var(--border-color)', borderRadius: '0 0 8px 8px', zIndex: 100, maxHeight: '200px', overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div className="search-dropdown">
             {filtered.map(item => (
-              <div key={item.id} onClick={() => { setSearch(item.name); setExactSearch(true); }}
-                style={{ padding: '0.6rem 0.75rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-main)'}
-                onMouseLeave={e => e.currentTarget.style.background = ''}>
+              <div key={item.id} className="search-dropdown-item"
+                onClick={() => { setSearch(item.name); setExactSearch(true); }}>
                 {item.name}
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginLeft: '0.4rem' }}>({item.unit})</span>
+                <span className="unit-tag">({item.unit})</span>
               </div>
             ))}
           </div>
@@ -477,18 +423,12 @@ const AdminInventory = () => {
       </div>
     </div>
 
-    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-      <button className="primary" onClick={saveAll} disabled={globalSaving}
-        style={{ flex: 1, padding: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+    <div className="save-row">
+      <button className="primary save-all-btn" onClick={saveAll} disabled={globalSaving}>
           <SaveAll size={18} />
         {globalSaving ? 'Đang lưu...' : `Chốt Kho Ngày ${selectedDate}`}
       </button>
-      <button 
-        className="danger" 
-        onClick={deleteAllRecords}
-        title="Xóa bản ghi ngày này"
-        style={{ padding: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-      >
+      <button className="danger" onClick={deleteAllRecords} title="Xóa bản ghi ngày này">
         <Trash2 size={18} />
       </button>
     </div>
@@ -498,25 +438,23 @@ const AdminInventory = () => {
         const d = dayData[item.id] || {};
         const newTotal = getNew(item.id);
         return (
-          <div key={item.id} className="inventory-item" style={{ border: '1px solid var(--border-color)', padding: '1rem', borderRadius: '8px' }}>
+          <div key={item.id} className="inventory-item">
               <div className="item-header">
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{item.name}</h3>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.unit}</span>
+                  <h3>{item.name}</h3>
+                  <span className="unit-label">{item.unit}</span>
                 </div>
-                <div style={{ display: 'flex', gap: '0.375rem' }}>
-                  <button onClick={() => openEditModal(item)} title="Chỉnh sửa"
-                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.8rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                <div className="btn-group">
+                  <button className="btn-sm" onClick={() => openEditModal(item)} title="Chỉnh sửa">
                     <Pencil size={14} />
                   </button>
-                  <button onClick={() => saveItem(item)} disabled={saving[item.id]}
-                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.8rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                  <button className="btn-sm" onClick={() => saveItem(item)} disabled={saving[item.id]}>
                     <Save size={14} /> {saving[item.id] ? '...' : 'Lưu'}
                   </button>
                 </div>
               </div>
 
-            <div className="item-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginTop: '1rem' }}>
+            <div className="item-stats">
               <div className="stat-box">
                 <div className="stat-label">Tồn Cũ</div>
                 <input type="number" value={d.oldStock ?? 0}
@@ -524,7 +462,7 @@ const AdminInventory = () => {
               </div>
               <div className="stat-box highlight">
                 <div className="stat-label">Tổng Mới</div>
-                <div className="stat-value" style={{ color: 'var(--accent)', fontSize: '1.2rem', fontWeight: 800 }}>{newTotal}</div>
+                <div className="stat-value highlight-value">{newTotal}</div>
               </div>
               <div className="stat-box">
                 <div className="stat-label">Nhập</div>
@@ -544,48 +482,44 @@ const AdminInventory = () => {
   </>
 ) : (
   <div>
-    <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-      <div style={{ position: 'relative', flex: 1 }}>
+    <div className="history-search-row">
+      <div className="search-wrapper">
         <input
           type="text"
           placeholder="Tìm kiếm mặt hàng..."
           value={search}
           onChange={e => { setSearch(e.target.value); setExactSearch(false); }}
-          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '1rem', boxSizing: 'border-box' }}
         />
         {search && !exactSearch && filtered.length > 0 && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid var(--border-color)', borderRadius: '0 0 8px 8px', zIndex: 100, maxHeight: '200px', overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div className="search-dropdown">
             {filtered.map(item => (
-              <div key={item.id} onClick={() => { setSearch(item.name); setExactSearch(true); }}
-                style={{ padding: '0.6rem 0.75rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-main)'}
-                onMouseLeave={e => e.currentTarget.style.background = ''}>
+              <div key={item.id} className="search-dropdown-item"
+                onClick={() => { setSearch(item.name); setExactSearch(true); }}>
                 {item.name}
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginLeft: '0.4rem' }}>({item.unit})</span>
+                <span className="unit-tag">({item.unit})</span>
               </div>
             ))}
           </div>
         )}
       </div>
-      <button className="secondary" onClick={exportFullHistory}
-        style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
+      <button className="secondary export-btn" onClick={exportFullHistory}>
         <Download size={16} /> Xuất Excel
       </button>
     </div>
 
     {loadingHistory ? (
-      <div style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--text-secondary)' }}>Đang tải dữ liệu lịch sử...</div>
+      <div className="loading-text">Đang tải dữ liệu lịch sử...</div>
     ) : !historyData || Object.keys(historyData).length === 0 ? (
-      <div className="inventory-item" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+      <div className="inventory-item empty-state">
         Chưa có dữ liệu lịch sử. Hãy chốt kho để tạo dữ liệu.
       </div>
     ) : (
-      <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: '600px' }}>
+      <div className="table-wrap">
+        <table className="history-table">
           <thead>
-            <tr style={{ background: 'var(--bg-main)', position: 'sticky', top: 0 }}>
+            <tr>
               {['Ngày', 'Mặt Hàng', 'ĐV', 'Tồn Cũ', 'Nhập', 'Xuất', 'Tồn Mới'].map(h => (
-                <th key={h} style={{ padding: '0.75rem 0.5rem', textAlign: 'left', borderBottom: '2px solid var(--border-color)', whiteSpace: 'nowrap' }}>{h}</th>
+                <th key={h}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -597,21 +531,18 @@ const AdminInventory = () => {
                 const hasUsed = (d.used || 0) > 0;
                 const hasActivity = hasAdded || hasUsed;
                 return (
-                  <tr key={`${date}-${item.id}`} style={{
-                    background: hasActivity ? '#fffbeb' : undefined,
-                    borderBottom: '1px solid var(--border-color)'
-                  }}>
-                    <td style={{ padding: '0.5rem', whiteSpace: 'nowrap', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{date}</td>
-                    <td style={{ padding: '0.5rem', fontWeight: 500 }}>{item.name}</td>
-                    <td style={{ padding: '0.5rem', color: 'var(--text-secondary)' }}>{item.unit}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center' }}>{d.oldStock ?? '-'}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', color: hasAdded ? '#16a34a' : undefined, fontWeight: hasAdded ? 700 : 400, background: hasAdded ? '#f0fdf4' : undefined }}>
+                  <tr key={`${date}-${item.id}`} className={hasActivity ? 'activity-row' : ''}>
+                    <td className="date-cell">{date}</td>
+                    <td className="name-cell">{item.name}</td>
+                    <td className="unit-cell">{item.unit}</td>
+                    <td className="num-cell">{d.oldStock ?? '-'}</td>
+                    <td className={`num-cell ${hasAdded ? 'added-cell' : ''}`}>
                       {hasAdded ? `+${d.added}` : '-'}
                     </td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', color: hasUsed ? 'var(--danger)' : undefined, fontWeight: hasUsed ? 700 : 400, background: hasUsed ? '#fef2f2' : undefined }}>
+                    <td className={`num-cell ${hasUsed ? 'used-cell' : ''}`}>
                       {hasUsed ? `-${d.used}` : '-'}
                     </td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', fontWeight: 600 }}>{d.newTotal ?? '-'}</td>
+                    <td className="num-cell total-cell">{d.newTotal ?? '-'}</td>
                   </tr>
                 );
               })

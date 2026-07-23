@@ -27,15 +27,15 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80vh' }}>
-      <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+    <div className="container login-page">
+      <div className="login-header">
         <h1>Hanoi An</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Hệ thống quản lý kiểm kho</p>
+        <p className="login-subtitle">Hệ thống quản lý kiểm kho</p>
       </div>
       
-      <div className="inventory-item" style={{ padding: '2rem' }}>
-        <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Đăng nhập</h2>
-        {error && <div style={{ color: 'var(--danger)', marginBottom: '1rem', textAlign: 'center', fontSize: '0.9rem' }}>{error}</div>}
+      <div className="inventory-item login-card">
+        <h2 className="login-heading">Đăng nhập</h2>
+        {error && <div className="login-error">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
@@ -55,7 +55,7 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="primary" style={{ width: '100%', marginTop: '1rem' }}>
+          <button type="submit" className="primary login-btn">
             Đăng nhập
           </button>
         </form>
