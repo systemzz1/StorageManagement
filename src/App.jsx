@@ -2,14 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { SidebarProvider } from './contexts/SidebarContext';
+import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import { useAuth } from './contexts/useAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import ReportsView from './pages/ReportsView';
 import AdminDashboard from './pages/AdminDashboard';
-import Navbar from './components/Navbar';
+import { Menu } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
@@ -25,10 +25,16 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
 
 const AppContent = () => {
   const { currentUser } = useAuth();
+  const { toggle } = useSidebar();
 
   return (
-    <div style={{ paddingBottom: currentUser ? '80px' : '0' }}>
+    <div>
       <Sidebar />
+      {currentUser && (
+        <button className="floating-menu-btn" onClick={toggle} title="Mở menu">
+          <Menu size={22} />
+        </button>
+      )}
       <Routes>
         <Route path="/login" element={<Login />} />
 
@@ -56,8 +62,6 @@ const AppContent = () => {
           </ProtectedRoute>
         } />
       </Routes>
-
-      {currentUser && <Navbar />}
     </div>
   );
 };
