@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ref, onValue, get, set, push, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
 import { useAuth } from '../contexts/useAuth';
-import { Plus, Check, Undo2, RotateCcw, Trash2 } from 'lucide-react';
+import { Plus, Check, Undo2, RotateCcw, Trash2, X } from 'lucide-react';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const EXPIRE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -157,7 +157,13 @@ const StaffInventory = () => {
 
       <div className="search-wrapper" style={{ marginBottom: '1.5rem' }}>
         <input type="text" placeholder="Tìm kiếm sản phẩm..." value={search}
-          onChange={e => { setSearch(e.target.value); setExactSearch(false); }} />
+          onChange={e => { setSearch(e.target.value); setExactSearch(false); }}
+          onFocus={e => e.target.select()} />
+        {search && (
+          <button className="search-clear-btn" onClick={() => { setSearch(''); setExactSearch(false); }}>
+            <X size={18} />
+          </button>
+        )}
         {search && !exactSearch && filtered.length > 0 && (
           <div className="search-dropdown">
             {filtered.map(item => (

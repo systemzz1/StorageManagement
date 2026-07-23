@@ -278,6 +278,24 @@ button.active-view {
   background: var(--bg-main);
 }
 
+.search-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  z-index: 10;
+}
+
+.search-clear-btn:hover {
+  color: var(--text-primary);
+}
+
 /* Pagination */
 .pagination {
   display: flex;
