@@ -1199,28 +1199,22 @@ input:focus {
   color: var(--danger);
 }
 
-.sidebar-tab {
-  position: fixed;
-  left: 0;
-  top: 80px;
-  z-index: 85;
-  width: 36px;
-  height: 56px;
-  background: var(--accent);
-  color: white;
+.hamburger-btn {
+  background: none;
   border: none;
-  border-radius: 0 12px 12px 0;
+  color: var(--text-primary);
+  padding: 0.25rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.18);
-  transition: background 0.15s, width 0.15s;
+  border-radius: 6px;
+  transition: background 0.15s;
 }
 
-.sidebar-tab:hover {
-  background: var(--accent-hover);
-  width: 40px;
+.hamburger-btn:hover {
+  background: var(--bg-main);
 }
 
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ref, onValue, update, get, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
 import { useTheme } from '../contexts/ThemeContext';
-import { Save, SaveAll, Plus, History, Trash2, Download, CheckCircle2, List, Pencil, Sun, Moon, Monitor } from 'lucide-react';
+import { useSidebar } from '../contexts/SidebarContext';
+import { Save, SaveAll, Plus, History, Trash2, Download, CheckCircle2, List, Pencil, Sun, Moon, Monitor, Menu } from 'lucide-react';
 import AddItemModal from '../components/AddItemModal';
 import EditItemModal from '../components/EditItemModal';
 import * as XLSX from 'xlsx';
@@ -11,6 +12,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 const AdminInventory = () => {
   const { mode, cycleMode } = useTheme();
+  const { toggle } = useSidebar();
   const themeIcons = { system: Monitor, dark: Moon, light: Sun };
   const ThemeIcon = themeIcons[mode];
   const [items, setItems] = useState([]);
@@ -371,6 +373,7 @@ const AdminInventory = () => {
     <div className="container" style={{ paddingBottom: '6rem' }}>
       <header className="app-header">
         <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button className="hamburger-btn" onClick={toggle}><Menu size={22} /></button>
           <History size={24} /> Kho Hàng (Lịch Sử)
         </h1>
         <div style={{ display: 'flex', gap: '0.375rem' }}>

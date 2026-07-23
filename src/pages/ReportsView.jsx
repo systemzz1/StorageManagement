@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/useAuth';
+import { useSidebar } from '../contexts/SidebarContext';
 import { ref, get, remove, onValue } from 'firebase/database';
 import { database } from '../firebaseConfig';
-import { ArrowRight, ChevronDown, ChevronUp, Trash2, Calendar, FileText } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, Trash2, Calendar, FileText, Menu } from 'lucide-react';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -25,6 +26,7 @@ const purgeAndFetch = async () => {
 // ─── Admin View ───────────────────────────────────────────────────────────────
 const AdminReports = () => {
   const { role } = useAuth();
+  const { toggle } = useSidebar();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState({});
@@ -68,7 +70,10 @@ const AdminReports = () => {
   return (
     <div className="container" style={{ paddingBottom: '6rem' }}>
       <header className="app-header">
-        <h1><FileText size={24} /> Báo Cáo Nhân Viên</h1>
+        <h1>
+          <button className="hamburger-btn" onClick={toggle}><Menu size={22} /></button>
+          <FileText size={24} /> Báo Cáo Nhân Viên
+        </h1>
       </header>
 
       <div style={{ marginBottom: '1.25rem', width: '100%' }}>
@@ -202,6 +207,7 @@ const ReportCard = ({ report, expanded, onToggle, onDelete }) => {
 // ─── Staff View ───────────────────────────────────────────────────────────────
 const StaffReports = () => {
   const { currentUser } = useAuth();
+  const { toggle } = useSidebar();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState({});
@@ -220,7 +226,10 @@ const StaffReports = () => {
   return (
     <div className="container" style={{ paddingBottom: '6rem' }}>
       <header className="app-header">
-        <h1>Báo Cáo Của Tôi</h1>
+        <h1>
+          <button className="hamburger-btn" onClick={toggle}><Menu size={22} /></button>
+          Báo Cáo Của Tôi
+        </h1>
       </header>
       {reports.length === 0 ? (
         <div className="inventory-item empty-state">Bạn chưa có báo cáo nào. Hãy kiểm kho và gửi báo cáo!</div>

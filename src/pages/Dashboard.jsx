@@ -1,15 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
-import { LayoutDashboard, Package, FileText, BarChart3 } from 'lucide-react';
+import { useSidebar } from '../contexts/SidebarContext';
+import { LayoutDashboard, Package, FileText, BarChart3, Menu } from 'lucide-react';
 
 const Dashboard = () => {
   const { currentUser, role } = useAuth();
+  const { toggle } = useSidebar();
 
   return (
     <div className="container">
       <header className="app-header">
-        <h1><LayoutDashboard size={24} /> Tổng Quan</h1>
+        <h1>
+          <button className="hamburger-btn" onClick={toggle}><Menu size={22} /></button>
+          <LayoutDashboard size={24} /> Tổng Quan
+        </h1>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           {role === 'admin' ? 'Quản Lý' : 'Nhân Viên'}
         </span>

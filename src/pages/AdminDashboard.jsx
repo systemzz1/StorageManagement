@@ -4,7 +4,8 @@ import { getAuth, createUserWithEmailAndPassword, signOut, sendPasswordResetEmai
 import { ref, set, get, remove, onValue, update } from 'firebase/database';
 import { database, auth } from '../firebaseConfig';
 import { useAuth } from '../contexts/useAuth';
-import { Trash2, KeyRound, Plus, X, UserPlus } from 'lucide-react';
+import { useSidebar } from '../contexts/SidebarContext';
+import { Trash2, KeyRound, Plus, X, UserPlus, Menu } from 'lucide-react';
 
 // Secondary app to create accounts without logging out admin
 const firebaseConfig = {
@@ -145,6 +146,7 @@ const ResetPasswordModal = ({ user, isOpen, onClose, onSuccess }) => {
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 const AdminDashboard = () => {
   const { currentUser } = useAuth();
+  const { toggle } = useSidebar();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
@@ -198,7 +200,10 @@ const AdminDashboard = () => {
   return (
     <div className="container" style={{ paddingBottom: '6rem' }}>
       <header className="app-header">
-        <h1>Quản Lý Tài Khoản</h1>
+        <h1>
+          <button className="hamburger-btn" onClick={toggle}><Menu size={22} /></button>
+          Quản Lý Tài Khoản
+        </h1>
         <button className="primary" onClick={() => setShowAddModal(true)}>
           <UserPlus size={18} /> Thêm
         </button>

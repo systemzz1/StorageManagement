@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { ref, onValue, get, set, push, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
 import { useAuth } from '../contexts/useAuth';
-import { Plus, Check, Undo2, RotateCcw, Trash2, X } from 'lucide-react';
+import { useSidebar } from '../contexts/SidebarContext';
+import { Plus, Check, Undo2, RotateCcw, Trash2, X, Menu } from 'lucide-react';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const EXPIRE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 const StaffInventory = () => {
   const { currentUser } = useAuth();
+  const { toggle } = useSidebar();
   const [items, setItems] = useState([]);
   const [draft, setDraft] = useState({});
   const [search, setSearch] = useState('');
@@ -149,7 +151,10 @@ const StaffInventory = () => {
   return (
     <div className="container">
       <header className="app-header">
-        <h1>Kiểm Kho</h1>
+        <h1>
+          <button className="hamburger-btn" onClick={toggle}><Menu size={22} /></button>
+          Kiểm Kho
+        </h1>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{countRegistered}/{items.length}</span>
       </header>
 
