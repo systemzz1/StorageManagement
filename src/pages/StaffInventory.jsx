@@ -15,7 +15,6 @@ const StaffInventory = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [exactSearch, setExactSearch] = useState(false);
-  const [reportedIds, setReportedIds] = useState(new Set());
 
   useEffect(() => {
     const unsub = onValue(ref(database, 'items'), snap => {
@@ -32,20 +31,6 @@ const StaffInventory = () => {
       if (snap.exists()) setDraft(snap.val());
     });
   }, [currentUser]);
-
-  // Build set of item IDs that have ever been reported
-  useEffect(() => {
-    const unsub = onValue(ref(database, 'staff_reports'), snap => {
-      if (snap.exists()) {
-        const ids = new Set();
-        Object.values(snap.val()).forEach(r => {
-          Object.keys(r.items || {}).forEach(id => ids.add(id));
-        });
-        setReportedIds(ids);
-      }
-    });
-    return () => unsub();
-  }, []);
 
   // Persist draft to DB whenever it changes
   const saveDraft = (newDraft) => {
@@ -133,18 +118,17 @@ const StaffInventory = () => {
 
   const filtered = items.filter(i => exactSearch ? i.name.toLowerCase() === search.toLowerCase() : i.name.toLowerCase().includes(search.toLowerCase()));
   const sorted = [...filtered].sort((a, b) => {
-    const aR = reportedIds.has(a.id) ? 1 : 0;
-    const bR = reportedIds.has(b.id) ? 1 : 0;
+    const aR = draft[a.id]?.registered ? 1 : 0;
+    const bR = draft[b.id]?.registered ? 1 : 0;
     return bR - aR;
   });
   const countRegistered = Object.values(draft).filter(d => d.registered).length;
-  const countReported = sorted.filter(i => reportedIds.has(i.id)).length;
 
   return (
     <div className="container" style={{ paddingBottom: '8rem' }}>
       <header className="app-header">
         <h1>Kiểm Kho</h1>
-        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{countReported}/{countRegistered}/{items.length}</span>
+        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{countRegistered}/{items.length}</span>
       </header>
 
       {submitted && <div className="toast success">✅ Đã gửi báo cáo thành công!</div>}
@@ -171,7 +155,6 @@ const StaffInventory = () => {
             key={item.id}
             item={item}
             draftData={draft[item.id]}
-            hasReport={reportedIds.has(item.id)}
             onAdd={(val) => handleAdd(item.id, val)}
             onRegister={() => handleRegister(item.id)}
             onUndo={() => handleUndo(item.id)}
@@ -182,14 +165,14 @@ const StaffInventory = () => {
 
       <div className="submit-bar">
         <button onClick={handleSubmitAll} className="primary submit-btn" disabled={submitting}>
-          {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countReported} đã báo cáo + ${countRegistered} đã đếm)`}
+          {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered} mục đã đếm)`}
         </button>
       </div>
     </div>
   );
 };
 
-const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset, hasReport }) => {
+const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) => {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
 
@@ -211,7 +194,7 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset, ha
     <div className="inventory-item" style={{ border: registered ? '2px solid var(--success)' : '1px solid var(--border-color)' }}>
       <div className="item-header" style={{ borderBottom: 'none', paddingBottom: '0' }}>
         <div>
-          <h3>{item.name} {hasReport && <span className="reported-badge">Đã báo cáo</span>}</h3>
+          <h3>{item.name} {registered && <span className="reported-badge">Đã báo cáo</span>}</h3>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.unit}</span>
         </div>
         {registered && <Check color="var(--success)" size={22} />}
