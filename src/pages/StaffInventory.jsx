@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ref, onValue, get, set, push, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
 import { useAuth } from '../contexts/useAuth';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Undo2, RotateCcw } from 'lucide-react';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const EXPIRE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -53,9 +53,25 @@ const StaffInventory = () => {
   };
 
   const handleRegister = (itemId) => {
-    const d = draft[itemId];
-    if (!d) return;
+    const d = draft[itemId] || { accumulated: 0, log: [] };
     saveDraft({ ...draft, [itemId]: { ...d, registered: true } });
+  };
+
+  const handleUndo = (itemId) => {
+    const d = draft[itemId];
+    if (!d || d.log.length === 0) return;
+    const lastVal = d.log[d.log.length - 1];
+    const newLog = d.log.slice(0, -1);
+    const newAcc = d.accumulated - lastVal;
+    saveDraft({ ...draft, [itemId]: { accumulated: newAcc, log: newLog, registered: false } });
+  };
+
+  const handleReset = (itemId) => {
+    if (!draft[itemId]) return;
+    if (!window.confirm('Xóa số liệu đã nhập cho mặt hàng này?')) return;
+    const newDraft = { ...draft };
+    delete newDraft[itemId];
+    saveDraft(newDraft);
   };
 
   const handleSubmitAll = async () => {
@@ -138,6 +154,8 @@ const StaffInventory = () => {
             draftData={draft[item.id]}
             onAdd={(val) => handleAdd(item.id, val)}
             onRegister={() => handleRegister(item.id)}
+            onUndo={() => handleUndo(item.id)}
+            onReset={() => handleReset(item.id)}
           />
         ))}
       </div>
@@ -151,13 +169,14 @@ const StaffInventory = () => {
   );
 };
 
-const StaffItemCard = ({ item, draftData, onAdd, onRegister }) => {
+const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) => {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
 
   const accumulated = draftData?.accumulated ?? 0;
   const log = draftData?.log ?? [];
   const registered = draftData?.registered ?? false;
+  const hasData = draftData !== undefined;
 
   const handleAdd = () => {
     if (input === '') { setError('Vui lòng nhập số lượng'); return; }
@@ -179,12 +198,21 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister }) => {
       </div>
 
       {log.length > 0 && (
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0.5rem 0', background: 'var(--bg-main)', padding: '0.4rem 0.6rem', borderRadius: '6px' }}>
-          {log.join(' + ')} = <strong style={{ color: 'var(--text-primary)' }}>{accumulated}</strong> {item.unit}
+        <div className="log-row">
+          <span>{log.join(' + ')} = <strong>{accumulated}</strong> {item.unit}</span>
+          <button className="undo-btn" onClick={onUndo} title="Hoàn tác lần cộng cuối">
+            <Undo2 size={14} />
+          </button>
         </div>
       )}
 
-      {error && <div style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>{error}</div>}
+      {hasData && log.length === 0 && accumulated === 0 && registered && (
+        <div className="log-row" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+          Không có số liệu nhập — sẽ dùng số liệu báo cáo trước
+        </div>
+      )}
+
+      {error && <div className="error-text">{error}</div>}
 
       <div className="staff-input-row">
         <input
@@ -199,9 +227,16 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister }) => {
         </button>
       </div>
 
-      <button onClick={onRegister} className={`register-btn ${registered ? 'registered' : ''}`}>
-        {registered ? '✅ Đã Ghi Nhận' : 'Ghi Nhận'}
-      </button>
+      <div className="register-row">
+        <button onClick={onRegister} className={`register-btn ${registered ? 'registered' : ''}`}>
+          {registered ? '✅ Đã Ghi Nhận' : 'Ghi Nhận'}
+        </button>
+        {hasData && (
+          <button onClick={onReset} className="reset-btn" title="Xóa số liệu đã nhập">
+            <RotateCcw size={14} />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
