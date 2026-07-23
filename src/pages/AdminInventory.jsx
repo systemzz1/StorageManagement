@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ref, onValue, update, get, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
 import { Save, SaveAll, Plus, History, Trash2, Download, CheckCircle2, List, Pencil } from 'lucide-react';
@@ -84,17 +84,17 @@ const AdminInventory = () => {
     if (items.length > 0) loadDayData();
   }, [selectedDate, items]);
 
-  const getNew = (id) => {
+  const getNew = useCallback((id) => {
     const d = dayData[id] || {};
     return (d.oldStock || 0) + (d.added || 0) - (d.used || 0);
-  };
+  }, [dayData]);
 
-  const handleFieldChange = (id, field, value) => {
+  const handleFieldChange = useCallback((id, field, value) => {
     const num = value === '' ? 0 : Math.max(0, parseFloat(value) || 0);
     setDayData(prev => ({ ...prev, [id]: { ...prev[id], [field]: num } }));
-  };
+  }, []);
 
-  const saveItem = async (item) => {
+  const saveItem = useCallback(async (item) => {
     setSaving(s => ({ ...s, [item.id]: true }));
     const d = dayData[item.id] || {};
     await update(ref(database, `master_storage_logs/${selectedDate}/items/${item.id}`), {
@@ -106,9 +106,9 @@ const AdminInventory = () => {
       newTotal: getNew(item.id),
     });
     setSaving(s => ({ ...s, [item.id]: false }));
-  };
+  }, [dayData, selectedDate, getNew]);
 
-  const saveAll = async () => {
+  const saveAll = useCallback(async () => {
     setGlobalSaving(true);
     try {
       const updates = {};
@@ -137,9 +137,9 @@ const AdminInventory = () => {
     } finally {
       setGlobalSaving(false);
     }
-  };
+  }, [items, dayData, selectedDate, getNew]);
 
-  const exportFullHistory = async () => {
+  const exportFullHistory = useCallback(async () => {
     try {
       const snap = await get(ref(database, 'master_storage_logs'));
       if (!snap.exists()) {
@@ -193,9 +193,9 @@ const AdminInventory = () => {
       console.error(err);
       alert('Lỗi khi xuất dữ liệu.');
     }
-  };
+  }, [items]);
 
-  const deleteAllRecords = async () => {
+  const deleteAllRecords = useCallback(async () => {
     if (window.confirm(`CẢNH BÁO: Xóa toàn bộ bản ghi ngày ${selectedDate}?`)) {
       try {
         await remove(ref(database, `master_storage_logs/${selectedDate}`));
@@ -206,9 +206,9 @@ const AdminInventory = () => {
         alert('Lỗi khi xóa dữ liệu.');
       }
     }
-  };
+  }, [selectedDate]);
 
-  const populateDummyHistory = async () => {
+  const populateDummyHistory = useCallback(async () => {
     if (!window.confirm('Tạo dữ liệu mẫu kho 5 ngày liên tiếp (từ 4 ngày trước đến hôm nay) với số liệu tiếp nối chính xác qua từng ngày?')) return;
 
     try {
@@ -312,9 +312,9 @@ const AdminInventory = () => {
     } finally {
       setGlobalSaving(false);
     }
-  };
+  }, [items, selectedDate]);
 
-  const loadHistoryData = async () => {
+  const loadHistoryData = useCallback(async () => {
     setLoadingHistory(true);
     try {
       const snap = await get(ref(database, 'master_storage_logs'));
@@ -323,26 +323,32 @@ const AdminInventory = () => {
       console.error(err);
     }
     setLoadingHistory(false);
-  };
+  }, []);
 
-  const handleToggleView = () => {
+  const handleToggleView = useCallback(() => {
     if (viewMode === 'edit') {
       setViewMode('history');
       loadHistoryData();
     } else {
       setViewMode('edit');
     }
-  };
+  }, [viewMode, loadHistoryData]);
 
-  const openEditModal = (item) => {
+  const openEditModal = useCallback((item) => {
     setEditItem(item);
     setIsEditModalOpen(true);
-  };
+  }, []);
 
-  const filtered = items.filter(i => exactSearch ? i.name.toLowerCase() === search.toLowerCase() : i.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = useMemo(() =>
+    items.filter(i => exactSearch ? i.name.toLowerCase() === search.toLowerCase() : i.name.toLowerCase().includes(search.toLowerCase())),
+    [items, search, exactSearch]
+  );
 
   // Available dates for chips (combine today + logged dates, sorted descending)
-  const chipDates = Array.from(new Set([today(), ...Object.keys(allLoggedDates)])).sort((a, b) => b.localeCompare(a));
+  const chipDates = useMemo(() =>
+    Array.from(new Set([today(), ...Object.keys(allLoggedDates)])).sort((a, b) => b.localeCompare(a)),
+    [allLoggedDates]
+  );
 
   return (
     <div className="container" style={{ paddingBottom: '6rem' }}>
