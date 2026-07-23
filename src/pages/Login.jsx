@@ -22,7 +22,15 @@ const Login = () => {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError('Đăng nhập thất bại. Vui lòng kiểm tra lại.');
+      const errorMessages = {
+        'auth/user-not-found': 'Tài khoản không tồn tại.',
+        'auth/wrong-password': 'Mật khẩu không đúng.',
+        'auth/invalid-email': 'Email không hợp lệ.',
+        'auth/user-disabled': 'Tài khoản đã bị vô hiệu hóa.',
+        'auth/invalid-credential': 'Email hoặc mật khẩu không đúng.',
+        'auth/too-many-requests': 'Tài khoản tạm thời bị khóa do nhập sai quá nhiều lần. Vui lòng thử lại sau.',
+      };
+      setError(errorMessages[err.code] || 'Đăng nhập thất bại. Vui lòng kiểm tra lại.');
     }
   };
 
