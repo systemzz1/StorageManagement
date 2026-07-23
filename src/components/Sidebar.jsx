@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/useAuth';
 import { useSidebar } from '../contexts/SidebarContext';
 import { useTheme } from '../contexts/ThemeContext';
 import {
-  X, LayoutDashboard, ClipboardList, FileText, Settings,
+  X, Menu, LayoutDashboard, ClipboardList, FileText, Settings,
   LogOut, Sun, Moon, Monitor
 } from 'lucide-react';
 
@@ -31,7 +31,7 @@ const navGroups = (role) => [
 
 const Sidebar = () => {
   const { currentUser, role, logout } = useAuth();
-  const { isOpen, close } = useSidebar();
+  const { isOpen, close, toggle } = useSidebar();
   const { mode, cycleMode } = useTheme();
   const ThemeIcon = themeIcons[mode];
 
@@ -47,6 +47,11 @@ const Sidebar = () => {
   return (
     <>
       <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={close} />
+      {!isOpen && (
+        <button className="sidebar-tab" onClick={toggle} title="Mở menu">
+          <Menu size={20} />
+        </button>
+      )}
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-user">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
 import { LayoutDashboard, Package, FileText, BarChart3 } from 'lucide-react';
 
@@ -25,14 +26,14 @@ const Dashboard = () => {
         </div>
 
         <div className="item-stats">
-          <a href="/inventory" className="stat-box" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/inventory" className="stat-box" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <Package size={28} style={{ color: 'var(--accent)', marginBottom: '0.5rem' }} />
             <div className="stat-label">Kiểm Kho</div>
-          </a>
-          <a href="/reports" className="stat-box" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          </Link>
+          <Link to="/reports" className="stat-box" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <FileText size={28} style={{ color: 'var(--accent)', marginBottom: '0.5rem' }} />
             <div className="stat-label">Báo Cáo</div>
-          </a>
+          </Link>
         </div>
 
         <div className="inventory-item" style={{ padding: '1.5rem' }}>

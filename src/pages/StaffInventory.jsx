@@ -147,7 +147,7 @@ const StaffInventory = () => {
   const countRegistered = Object.values(draft).filter(d => d.registered).length;
 
   return (
-    <div className="container" style={{ paddingBottom: '8rem' }}>
+    <div className="container">
       <header className="app-header">
         <h1>Kiểm Kho</h1>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{countRegistered}/{items.length}</span>
