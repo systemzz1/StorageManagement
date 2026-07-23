@@ -51,9 +51,17 @@ const StaffInventory = () => {
     return true;
   };
 
-  const handleRegister = (itemId) => {
-    const d = draft[itemId] || { accumulated: 0, log: [] };
-    saveDraft({ ...draft, [itemId]: { ...d, registered: true } });
+  const handleRegister = (itemId, inputVal) => {
+    const prev = draft[itemId] || { accumulated: 0, log: [] };
+    let next = { ...prev };
+    if (inputVal !== undefined && inputVal !== '') {
+      const num = parseInt(inputVal);
+      if (!isNaN(num) && num >= 0) {
+        next.accumulated += num;
+        next.log = [...(next.log || []), num];
+      }
+    }
+    saveDraft({ ...draft, [itemId]: { ...next, registered: true } });
   };
 
   const handleUndo = (itemId) => {
@@ -170,7 +178,7 @@ const StaffInventory = () => {
             item={item}
             draftData={draft[item.id]}
             onAdd={(val) => handleAdd(item.id, val)}
-            onRegister={() => handleRegister(item.id)}
+            onRegister={(val) => handleRegister(item.id, val)}
             onUndo={() => handleUndo(item.id)}
             onReset={() => handleReset(item.id)}
           />
@@ -208,14 +216,8 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) 
   };
 
   const handleRegisterClick = () => {
-    if (input !== '') {
-      const num = parseInt(input);
-      if (!isNaN(num) && num >= 0) {
-        onAdd(input);
-      }
-    }
+    onRegister(input);
     setInput('');
-    onRegister();
   };
 
   return (
