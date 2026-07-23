@@ -49,7 +49,7 @@ const Sidebar = () => {
       <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={close} />
       {!isOpen && (
         <button className="sidebar-tab" onClick={toggle} title="Mở menu">
-          <Menu size={20} />
+          <Menu size={20} color="white" />
         </button>
       )}
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>

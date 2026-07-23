@@ -1202,25 +1202,25 @@ input:focus {
 .sidebar-tab {
   position: fixed;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 80px;
   z-index: 85;
-  width: 28px;
-  height: 64px;
+  width: 36px;
+  height: 56px;
   background: var(--accent);
   color: white;
   border: none;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 12px 12px 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.15);
-  transition: background 0.15s;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.18);
+  transition: background 0.15s, width 0.15s;
 }
 
 .sidebar-tab:hover {
   background: var(--accent-hover);
+  width: 40px;
 }
 
 
