@@ -207,6 +207,17 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) 
     if (success) setInput('');
   };
 
+  const handleRegisterClick = () => {
+    if (input !== '') {
+      const num = parseInt(input);
+      if (!isNaN(num) && num >= 0) {
+        onAdd(input);
+      }
+    }
+    setInput('');
+    onRegister();
+  };
+
   return (
     <div className="inventory-item" style={{ border: registered ? '2px solid var(--success)' : '1px solid var(--border-color)' }}>
       <div className="item-header" style={{ borderBottom: 'none', paddingBottom: '0' }}>
@@ -248,7 +259,7 @@ const StaffItemCard = ({ item, draftData, onAdd, onRegister, onUndo, onReset }) 
       </div>
 
       <div className="register-row">
-        <button onClick={onRegister} className={`register-btn ${registered ? 'registered' : ''}`}>
+        <button onClick={handleRegisterClick} className={`register-btn ${registered ? 'registered' : ''}`}>
           {registered ? '✅ Đã Ghi Nhận' : 'Ghi Nhận'}
         </button>
         {hasData && (
