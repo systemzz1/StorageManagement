@@ -5,6 +5,7 @@ import { database } from '../firebaseConfig';
 const EditItemModal = ({ item, isOpen, onClose }) => {
   const [name, setName] = useState('');
   const [unit, setUnit] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -16,11 +17,12 @@ const EditItemModal = ({ item, isOpen, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
+    setLoading(true);
     update(ref(database, `items/${item.id}`), {
       name: name.trim(),
       unit: unit.trim() || item.unit || 'Cái',
     }).then(() => {
-      onClose();
+      setLoading(false); onClose();
     });
   };
 
@@ -39,8 +41,10 @@ const EditItemModal = ({ item, isOpen, onClose }) => {
             <input type="text" value={unit} onChange={e => setUnit(e.target.value)} placeholder="Cái" />
           </div>
           <div className="modal-actions">
-            <button type="button" onClick={onClose}>Hủy</button>
-            <button type="submit" className="primary">Cập Nhật</button>
+            <button type="button" onClick={onClose} disabled={loading}>Hủy</button>
+            <button type="submit" className="primary" disabled={loading}>
+              {loading ? 'Đang cập nhật...' : 'Cập Nhật'}
+            </button>
           </div>
         </form>
       </div>

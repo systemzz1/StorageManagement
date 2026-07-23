@@ -5,13 +5,15 @@ import { database } from '../firebaseConfig';
 const AddItemModal = ({ isOpen, onClose }) => {
   const [name, setName] = useState('');
   const [unit, setUnit] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
+    setLoading(true);
     const newRef = push(ref(database, 'items'));
     set(newRef, { name: name.trim(), unit: unit.trim() || 'Cái' }).then(() => {
-      setName(''); setUnit(''); onClose();
+      setName(''); setUnit(''); setLoading(false); onClose();
     });
   };
 
@@ -30,8 +32,10 @@ const AddItemModal = ({ isOpen, onClose }) => {
             <input type="text" value={unit} onChange={e => setUnit(e.target.value)} placeholder="Cái" />
           </div>
           <div className="modal-actions">
-            <button type="button" onClick={onClose}>Hủy</button>
-            <button type="submit" className="primary">Lưu</button>
+            <button type="button" onClick={onClose} disabled={loading}>Hủy</button>
+            <button type="submit" className="primary" disabled={loading}>
+              {loading ? 'Đang lưu...' : 'Lưu'}
+            </button>
           </div>
         </form>
       </div>
