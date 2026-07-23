@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
 import { ref, set, get, remove, onValue, update } from 'firebase/database';
 import { database, auth } from '../firebaseConfig';
@@ -20,12 +20,10 @@ const firebaseConfig = {
 let secondaryApp, secondaryAuth;
 try {
   secondaryApp = initializeApp(firebaseConfig, 'Secondary');
-  secondaryAuth = getAuth(secondaryApp);
 } catch (e) {
-  // Already initialized
-  secondaryApp = initializeApp.app('Secondary');
-  secondaryAuth = getAuth(secondaryApp);
+  secondaryApp = getApp('Secondary');
 }
+secondaryAuth = getAuth(secondaryApp);
 
 // ─── Add Account Modal ────────────────────────────────────────────────────────
 const AddAccountModal = ({ isOpen, onClose, onSuccess }) => {
