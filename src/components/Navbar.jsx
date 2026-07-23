@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
-import { ClipboardList, FileText, Settings, LogOut } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
+import { ClipboardList, FileText, Settings, LogOut, Sun, Moon, Monitor } from 'lucide-react';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../firebaseConfig';
 
+const themeIcons = { system: Monitor, dark: Moon, light: Sun };
+
 const Navbar = () => {
   const { role, logout } = useAuth();
+  const { mode, cycleMode } = useTheme();
+  const ThemeIcon = themeIcons[mode];
   const [reportCount, setReportCount] = useState(0);
 
   useEffect(() => {
@@ -64,6 +69,11 @@ const Navbar = () => {
         </div>
         <span>Báo Cáo</span>
       </NavLink>
+
+      <button onClick={cycleMode} className="nav-item" title={`Chế độ: ${mode}`}>
+        <ThemeIcon size={20} />
+        <span style={{ fontSize: '0.65rem' }}>{mode === 'system' ? 'Tự động' : mode === 'dark' ? 'Tối' : 'Sáng'}</span>
+      </button>
 
       {role === 'admin' && (
         <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>

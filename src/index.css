@@ -12,6 +12,18 @@
   --success: #10b981;
 }
 
+[data-theme="dark"] {
+  --bg-main: #111827;
+  --bg-card: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -258,7 +270,7 @@ button.active-view {
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 0 0 8px 8px;
   z-index: 100;
@@ -469,7 +481,7 @@ button.active-view {
   left: 0;
   right: 0;
   padding: 0.75rem 1rem;
-  background: white;
+  background: var(--bg-card);
   border-top: 1px solid var(--border-color);
   z-index: 30;
 }

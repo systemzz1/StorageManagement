@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './contexts/useAuth';
 import Login from './pages/Login';
 import Inventory from './pages/Inventory';
@@ -54,11 +55,13 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <ErrorBoundary>
-          <AppContent />
-        </ErrorBoundary>
-      </Router>
+      <ThemeProvider>
+        <Router>
+          <ErrorBoundary>
+            <AppContent />
+          </ErrorBoundary>
+        </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

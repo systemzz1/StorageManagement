@@ -89,7 +89,7 @@ const AddAccountModal = ({ isOpen, onClose, onSuccess }) => {
           <div className="form-group">
             <label>Vai Trò</label>
             <select value={role} onChange={e => setRole(e.target.value)}
-              style={{ width: '100%', padding: '0.875rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '1rem', background: 'white' }}>
+              style={{ width: '100%', padding: '0.875rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '1rem', background: 'var(--bg-card)' }}>
               <option value="staff">Nhân Viên (Staff)</option>
               <option value="admin">Quản Lý (Admin)</option>
             </select>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ref, onValue, update, get, remove } from 'firebase/database';
 import { database } from '../firebaseConfig';
-import { Save, SaveAll, Plus, History, Trash2, Download, CheckCircle2, List, Pencil } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
+import { Save, SaveAll, Plus, History, Trash2, Download, CheckCircle2, List, Pencil, Sun, Moon, Monitor } from 'lucide-react';
 import AddItemModal from '../components/AddItemModal';
 import EditItemModal from '../components/EditItemModal';
 import * as XLSX from 'xlsx';
@@ -9,6 +10,9 @@ import * as XLSX from 'xlsx';
 const today = () => new Date().toISOString().slice(0, 10);
 
 const AdminInventory = () => {
+  const { mode, cycleMode } = useTheme();
+  const themeIcons = { system: Monitor, dark: Moon, light: Sun };
+  const ThemeIcon = themeIcons[mode];
   const [items, setItems] = useState([]);
   const [dayData, setDayData] = useState({});
   const [search, setSearch] = useState('');
@@ -371,8 +375,8 @@ const AdminInventory = () => {
         </h1>
         <div style={{ display: 'flex', gap: '0.375rem' }}>
           <button className="primary" onClick={() => setIsModalOpen(true)} title="Thêm mặt hàng mới"><Plus size={18} /></button>
-          <button className="secondary icon-btn" onClick={exportFullHistory} title="Xuất File Excel">
-            <Download size={16} />
+          <button className="secondary icon-btn" onClick={cycleMode} title={`Chế độ: ${mode}`}>
+            <ThemeIcon size={16} />
           </button>
           <button
             className={`secondary icon-btn${viewMode === 'history' ? ' active-view' : ''}`}
