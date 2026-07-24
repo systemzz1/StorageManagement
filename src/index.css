@@ -503,10 +503,49 @@ button.active-view {
   cursor: pointer;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 0.5rem;
+  user-select: none;
 }
 
 .yesterday-toggle input {
-  cursor: pointer;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: var(--border-color);
+  border-radius: 11px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.yesterday-toggle input:checked + .toggle-switch {
+  background: var(--accent);
+}
+
+.yesterday-toggle input:checked + .toggle-switch::after {
+  transform: translateX(18px);
+}
+
+.yesterday-toggle input:disabled + .toggle-switch {
+  opacity: 0.5;
 }
 
 /* Log row with undo */

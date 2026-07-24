@@ -206,7 +206,8 @@ const StaffInventory = () => {
       <div className="submit-bar">
         <label className="yesterday-toggle">
           <input type="checkbox" checked={reportForYesterday} onChange={e => setReportForYesterday(e.target.checked)} disabled={submitting || deleting} />
-          Báo cáo cho ngày {yesterday()}
+          <span className="toggle-switch" />
+          <span>Báo cáo cho ngày {yesterday()}</span>
         </label>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button onClick={handleSubmitAll} className="primary" style={{ flex: 1 }} disabled={submitting || deleting}>
