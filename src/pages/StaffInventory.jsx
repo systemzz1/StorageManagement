@@ -6,6 +6,11 @@ import { useSidebar } from '../contexts/SidebarContext';
 import { Plus, Check, Undo2, RotateCcw, Trash2, X, Menu } from 'lucide-react';
 
 const today = () => new Date().toISOString().slice(0, 10);
+const yesterday = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+};
 const EXPIRE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 const StaffInventory = () => {
@@ -18,6 +23,7 @@ const StaffInventory = () => {
   const [submitted, setSubmitted] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [exactSearch, setExactSearch] = useState(false);
+  const [reportForYesterday, setReportForYesterday] = useState(false);
 
   useEffect(() => {
     const unsub = onValue(ref(database, 'items'), snap => {
@@ -84,7 +90,8 @@ const StaffInventory = () => {
   };
 
   const handleSubmitAll = async () => {
-    if (!window.confirm('Gửi báo cáo kiểm kho hôm nay?')) return;
+    const reportDate = reportForYesterday ? yesterday() : today();
+    if (!window.confirm(`Gửi báo cáo kiểm kho cho ngày ${reportDate}?`)) return;
     setSubmitting(true);
 
     // Get last staff report for defaults
@@ -112,7 +119,7 @@ const StaffInventory = () => {
 
     const newReportRef = push(ref(database, 'staff_reports'));
     await set(newReportRef, {
-      date: today(),
+      date: reportDate,
       staffId: currentUser.uid,
       staffEmail: currentUser.email,
       submittedAt: Date.now(),
@@ -196,13 +203,19 @@ const StaffInventory = () => {
         ))}
       </div>
 
-      <div className="submit-bar" style={{ display: 'flex', gap: '0.5rem' }}>
-        <button onClick={handleSubmitAll} className="primary" style={{ flex: 1 }} disabled={submitting || deleting}>
-          {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered})`}
-        </button>
-        <button onClick={handleDeleteAllReports} className="danger" style={{ width: '3rem', flexShrink: 0, justifyContent: 'center' }} disabled={deleting || submitting} title="Xóa tất cả báo cáo">
-          {deleting ? '...' : <Trash2 size={18} />}
-        </button>
+      <div className="submit-bar">
+        <label className="yesterday-toggle">
+          <input type="checkbox" checked={reportForYesterday} onChange={e => setReportForYesterday(e.target.checked)} disabled={submitting || deleting} />
+          Báo cáo cho ngày {yesterday()}
+        </label>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button onClick={handleSubmitAll} className="primary" style={{ flex: 1 }} disabled={submitting || deleting}>
+            {submitting ? 'Đang gửi...' : `Gửi Báo Cáo (${countRegistered})`}
+          </button>
+          <button onClick={handleDeleteAllReports} className="danger" style={{ width: '3rem', flexShrink: 0, justifyContent: 'center' }} disabled={deleting || submitting} title="Xóa tất cả báo cáo">
+            {deleting ? '...' : <Trash2 size={18} />}
+          </button>
+        </div>
       </div>
     </div>
   );

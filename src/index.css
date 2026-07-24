@@ -492,6 +492,23 @@ button.active-view {
   padding: 1rem;
 }
 
+.yesterday-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+.yesterday-toggle input {
+  cursor: pointer;
+}
+
 /* Log row with undo */
 .log-row {
   font-size: 0.8rem;
